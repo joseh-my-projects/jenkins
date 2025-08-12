@@ -1,0 +1,21 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/joseh-my-projects/jenkins.git'
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                script {
+                    echo 'docker --version'
+                    sh "docker build -t simple-app:v-${BUILD_NUMBER} ."
+                    sh "docker images"  
+                }
+            }
+        }
+    }
+}
