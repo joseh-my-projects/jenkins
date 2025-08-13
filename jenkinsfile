@@ -1,19 +1,29 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Checkout Code') {
+    stages { 
+        stage('SCM Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/joseh-my-projects/jenkins.git'
             }
         }
-
-        stage('Build Image') {
+        
+        stage('Build and Push Docker Image') {
             steps {
                 script {
-                    echo 'docker --version'
-                    sh "docker build -t simple-app:v-${BUILD_NUMBER} ."
-                    sh "docker images"  
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'your-aws-credentials-id']]) {
+                        // Login to ECR
+                        sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images"
+
+                        // Build Docker image
+                        sh "docker build -t sample-app:v${BUILD_NUMBER} ."
+
+                        // Tag Docker image
+                        sh "docker tag sample-app:v${BUILD_NUMBER} 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app:v${BUILD_NUMBER}"
+
+                        // Push Docker image to ECR
+                        sh "docker push 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app:v${BUILD_NUMBER}"
+                    }
                 }
             }
         }

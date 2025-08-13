@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                    echo "Checking out Code"           
+            }
+    }
+        stage('Build IMage') {
+            steps {
+                echo "Build image"
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                echo "Docker Login"
+            }
+        }
+        stage('Pushing Image') {
+            steps {
+                echo "Pushing Image"
+            }
+        }
+    }
+}
