@@ -16,13 +16,13 @@ pipeline {
                         sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images"
 
                         // Build Docker image
-                        sh "sudo docker build -t sample-app:v${BUILD_NUMBER} ."
+                        sh "docker build -t sample-app:v${BUILD_NUMBER} ."
 
                         // Tag Docker image
-                        sh "sudo docker tag sample-app:v${BUILD_NUMBER} 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
+                        sh "docker tag sample-app:v${BUILD_NUMBER} 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
                         
                         // Push Docker image to ECR
-                        sh "sudo docker push 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
+                        sh "docker push 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
                         
                         // Push Docker image to ECR
                         sh "docker images"
