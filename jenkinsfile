@@ -22,7 +22,7 @@ pipeline {
                         sh "sudo docker tag sample-app:v${BUILD_NUMBER} 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
                         
                         // Push Docker image to ECR
-                        echo "image pushed"
+                        sh "sudo docker push 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
                         
                         // Push Docker image to ECR
                         sh "docker images"
