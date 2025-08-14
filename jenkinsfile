@@ -37,12 +37,14 @@ pipeline {
         }
         stage('Get ECS task') {
             steps {
-                sh "aws ecs describe-task-definition --task-definition sample-test"
-                sh "pwd"
-                sh "jq '.taskDefinition | .containerDefinitions[0].image=\"573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}\" | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.compatibilities)' task-definition.json > new-task-definition.json"
-                sh "pwd"
-                sh "aws ecs register-task-definition --cli-input-json file://new-task-definition.json"
-                sh "aws ecs describe-task-definition --task-definition sample-test"
+                script {
+                    sh "aws ecs describe-task-definition --task-definition sample-test"
+                    sh "pwd"
+                    sh "jq '.taskDefinition | .containerDefinitions[0].image=\"573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}\" | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.compatibilities)' task-definition.json > new-task-definition.json"
+                    sh "pwd"
+                    sh "aws ecs register-task-definition --cli-input-json file://new-task-definition.json"
+                    sh "aws ecs describe-task-definition --task-definition sample-test"
+                }    
             }
         }
     }
