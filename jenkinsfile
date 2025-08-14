@@ -32,6 +32,7 @@ pipeline {
             steps {
                 // Push Docker image to ECR
                 sh "docker push 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
+                sh "docker image prune -f --force"
             }
         }
         stage('Get ECS task') {
