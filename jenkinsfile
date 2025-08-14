@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Get ECS task') {
             steps {
-                sh "aws ecs describe-task-definition --task-definition sample-node-service --cluster test-cluster"
+                sh "aws ecs describe-task-definition --clsuter test-cluster --task-definition sample-node-service"
             }
         }
     }
