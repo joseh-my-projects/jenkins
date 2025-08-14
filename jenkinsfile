@@ -34,6 +34,11 @@ pipeline {
                 sh "docker push 573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
             }
         }
+        stage('Get ECS task') {
+            steps {
+                sh "aws ecs describe-task-definition --task-definition sample-node-service"
+            }
+        }
     }
     post {
             always {
