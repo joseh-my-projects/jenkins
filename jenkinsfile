@@ -41,7 +41,7 @@ pipeline {
                 sh "pwd"
                 sh "jq '.taskDefinition | .containerDefinitions[0].image=\"573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}\" | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)' task-definition.json > new-task-definition.json"
                 sh "pwd"
-                sh "NEW_TASK_INFO= aws ecs register-task-definition --cli-input-json file://new-task-definition.json"
+                sh "NEW_TASK_INFO=$(aws ecs register-task-definition --cli-input-json file://new-task-definition.json)"
                 echo "${New_TASK_INFO}"
             }
         }
