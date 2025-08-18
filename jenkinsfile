@@ -35,14 +35,16 @@ pipeline {
                 sh "docker image prune -f --force"
             }
         }
-        stage('Get ECS task') {
+        stage('Deploy to ECS') {
             steps {
-                sh "aws ecs describe-task-definition --task-definition my-ecs-task > task-definition.json"
-                sh "pwd"
-                sh "jq '.taskDefinition | .containerDefinitions[0].image=\"573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}\" | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)' task-definition.json > new-task-definition.json"
-                sh "pwd"
-                sh "NEW_TASK_INFO=$(aws ecs register-task-definition --cli-input-json file://new-task-definition.json)"
-                echo "${New_TASK_INFO}"
+                sh '''
+                TASK_DEFINITION=\$(aws ecs describe-task-definition --task-definition my-ecs-task)
+                NEW_IMAGE="573055573761.dkr.ecr.us-east-1.amazonaws.com/ecs-images:sample-app-v${BUILD_NUMBER}"
+                echo \$TASK_DEFINITION | jq --arg IMAGE "\$NEW_IMAGE" '.taskDefinition | .containerDefinitions[0].image = \$IMAGE | del(.taskDefinitionArn) | del(.revision) | del(.status) | del(.requiresAttributes) | del(.compatibilities) | del(.registeredAt) | del(.registeredBy)' > new-task-def.json
+                NEW_TASK_DEFINITION_ARN=\$(aws ecs register-task-definition --cli-input-json file://new-task-def.json | jq -r ".taskDefinition.taskDefinitionArn")
+                aws ecs update-service --cluster test-cluster --service my-sample-service --task-definition \$NEW_TASK_DEFINITION_ARN --force-new-deployment
+                echo ${NEW_TASK_DEFINITION_ARN}
+                '''
             }
         }
     }
