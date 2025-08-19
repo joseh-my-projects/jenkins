@@ -17,9 +17,7 @@ pipeline {
         stage("Move traffic") {
             steps {
                 sh '''
-                def value = params.PERCENTAGE
-
-                if (value == '10') {
+                if (params.PERCENTAGE == '10') {
                     aws elbv2 modify-listener \
                     --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
                     --default-actions \
@@ -41,7 +39,7 @@ pipeline {
                             }
                         }
                     ]'
-                } else if (value == '50') {
+                } else if (params.PERCENTAGE == '50') {
                     aws elbv2 modify-listener \
                     --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
                     --default-actions \
@@ -63,7 +61,7 @@ pipeline {
                             }
                         }
                     ]'
-                } else if (value == "100") {
+                } else if (params.PERCENTAGE == "100") {
                     aws elbv2 modify-listener \
                     --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
                     --default-actions \
