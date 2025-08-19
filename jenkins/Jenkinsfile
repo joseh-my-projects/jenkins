@@ -10,81 +10,85 @@ pipeline {
         stage("AWS Creds") {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS']]) {
-                    // Login to ECR
-                    sh '''
-                    def value = params.PERCENTAGE
-
-                    if (value == '10') {
-                        aws elbv2 modify-listener \
-                        --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
-                        --default-actions \
-                        '[
-                            {
-                                "Type": "forward",
-                                "Order": 1,
-                                "ForwardConfig": {
-                                    "TargetGroups": [
-                                        {
-                                            "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/blue-ecs/7e60168b6484dbaf",
-                                            "Weight": 10
-                                        },
-                                        {
-                                            "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/green-ecs/f0fd626ae39f7572",
-                                            "Weight": 90
-                                        }
-                                    ]
-                                }
-                            }
-                        ]'
-                    } else if (value == '50') {
-                        aws elbv2 modify-listener \
-                        --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
-                        --default-actions \
-                        '[
-                            {
-                                "Type": "forward",
-                                "Order": 1,
-                                "ForwardConfig": {
-                                    "TargetGroups": [
-                                        {
-                                            "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/blue-ecs/7e60168b6484dbaf",
-                                            "Weight": 50
-                                        },
-                                        {
-                                            "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/green-ecs/f0fd626ae39f7572",
-                                            "Weight": 50
-                                        }
-                                    ]
-                                }
-                            }
-                        ]'
-                    } else if (value == "100") {
-                        aws elbv2 modify-listener \
-                        --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
-                        --default-actions \
-                        '[
-                            {
-                                "Type": "forward",
-                                "Order": 1,
-                                "ForwardConfig": {
-                                    "TargetGroups": [
-                                        {
-                                            "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/blue-ecs/7e60168b6484dbaf",
-                                            "Weight": 100
-                                        },
-                                        {
-                                            "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/green-ecs/f0fd626ae39f7572",
-                                            "Weight": 0
-                                        }
-                                    ]
-                                }
-                            }
-                        ]'
-                    } else {
-                        echo "Wrong value given"
-                    }
-                    ''' 
+                    echo "Good to go"
                 }
+            }
+        }
+    stage("Move traffic") {
+        steps {
+            sh '''
+            def value = params.PERCENTAGE
+
+            if (value == '10') {
+                aws elbv2 modify-listener \
+                --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
+                --default-actions \
+                '[
+                    {
+                        "Type": "forward",
+                        "Order": 1,
+                        "ForwardConfig": {
+                            "TargetGroups": [
+                                {
+                                    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/blue-ecs/7e60168b6484dbaf",
+                                    "Weight": 10
+                                },
+                                {
+                                    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/green-ecs/f0fd626ae39f7572",
+                                    "Weight": 90
+                                }
+                            ]
+                        }
+                    }
+                ]'
+            } else if (value == '50') {
+                aws elbv2 modify-listener \
+                --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
+                --default-actions \
+                '[
+                    {
+                        "Type": "forward",
+                        "Order": 1,
+                        "ForwardConfig": {
+                            "TargetGroups": [
+                                {
+                                    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/blue-ecs/7e60168b6484dbaf",
+                                    "Weight": 50
+                                },
+                                {
+                                    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/green-ecs/f0fd626ae39f7572",
+                                    "Weight": 50
+                                }
+                            ]
+                        }
+                    }
+                ]'
+            } else if (value == "100") {
+                aws elbv2 modify-listener \
+                --listener-arn "arn:aws:elasticloadbalancing:us-east-1:573055573761:listener/app/ecs-alb/92541b0d2f24df2b/c896ffa6e6b1399c" \
+                --default-actions \
+                '[
+                    {
+                        "Type": "forward",
+                        "Order": 1,
+                        "ForwardConfig": {
+                            "TargetGroups": [
+                                {
+                                    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/blue-ecs/7e60168b6484dbaf",
+                                    "Weight": 100
+                                },
+                                {
+                                    "TargetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:573055573761:targetgroup/green-ecs/f0fd626ae39f7572",
+                                    "Weight": 0
+                                }
+                            ]
+                        }
+                    }
+                ]'
+            } else {
+                echo "Wrong value given"
+            }
+            ''' 
             }
         }
     }
